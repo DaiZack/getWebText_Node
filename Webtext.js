@@ -32,7 +32,7 @@ function get_text(url){
         request.get({url:url,followAllRedirects: true}, (err,res,body)=>{
             if(err){console.log('err',url)}else{
                 var $ = cheerio.load(body)
-                drop_tag = ['style', 'script','footer','header', 'head', 'title', 'meta', '[document]']
+                drop_tag = ['style', 'script','footer','header', 'head','iframe', 'title', 'meta', '[document]']
                 for(tag in drop_tag){
                     $(tag).remove()
                 }
