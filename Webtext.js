@@ -1,56 +1,26 @@
-const request=require('request')
-const cheerio=require('cheerio')
+function delay(one){
+    var p = new Promise(resolve => {setTimeout(resolve, 300)})
+    console.log(one)
+    return p
+  }
 
-function get_links(url){
-    return new Promise(resolve=>{
-        request.get({url:url, followAllRedirects: true}, (err,res,body)=>{
-            if(err){console.log('err',url)}else{
-                var $ = cheerio.load(body)
-                let links = []
-                $('a').each((i,a)=>{
-                    href = $(a).attr('href')
-                    if(href.startsWith(url)){
-                        links.push(href)
-                    }else{
-                        if(!href.startsWith('http')){
-                            match = href.match(/\w/)
-                            findex = href.indexOf(match)
-                            href = href.substring(findex,href.length)
-                            href = url+'/'+href
-                            links.push(href)
-                        }
-                    }
-                }) 
-                return resolve(links)        
-                }
-            })
-        })        
+var a = [1,2,3,4,5,6,7,8,9,10,11];
+
+async function loopInlimit(array,limit, callback){
+    var box = [];
+    var num = array.length/limit
+    for (var i=0;i<=limit;i++){
+        if(array.length>0){
+            box.push(array.splice(0,num))
+        }
     }
-
-function get_text(url){
-    return new Promise(resolve=>{
-        request.get({url:url,followAllRedirects: true}, (err,res,body)=>{
-            if(err){console.log('err',url)}else{
-                var $ = cheerio.load(body)
-                drop_tag = ['style', 'script','footer','header', 'head','iframe', 'title', 'meta', '[document]']
-                for(tag in drop_tag){
-                    $(tag).remove()
-                }
-                var text = $('body').text();
-                text = text.replace(/[\n\r\s]+/g,' ')
-                return resolve(text)
-            }
-        })
-    })    
-}
-
-async function get_pages(url){
-    var links = await get_links(url)
-    links.forEach(async(link)=>{
-        var text = await get_text(link)
-        console.log(text)
+    await box.map(async(smallbox)=>{
+        // console.log(smallbox)
+        for(one of smallbox){
+            // console.log(one)
+            await callback(one)
+        }
     })
 }
 
-var url = 'http://www.rel8ed.to'
-get_pages(url)
+loopInlimit(a,2, delay)
